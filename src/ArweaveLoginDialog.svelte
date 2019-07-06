@@ -1,6 +1,6 @@
 <script>
 	import { arweave } from './arweave.js';
-	export let open = false;
+	// export let open = false;
 
 	// function login (files) {
 	// 	var fr = new FileReader()
@@ -41,9 +41,9 @@
 		fr.readAsText(fileInput.files[0]);
 	}
 
-	function handleClickOutsideDialog(event) {
-		if (open === true && event.target.closest('.loginDialog') === null) open = false;
-	}
+	// function handleClickOutsideDialog(event) {
+	// 	if (open === true && event.target.closest('.loginDialog') === null) open = false;
+	// }
 </script>
 
 <style>
@@ -69,15 +69,26 @@
 	}
 </style>
 
-<svelte:window on:click={handleClickOutsideDialog}/>
-<dialog {open} class="loginDialog br3">
-	<div class="file-input">
-		<input class="clickable" type="file" id="file" bind:this={fileInput} on:change={handleUpload}>
-		<div id="desc">Drop an Arweave wallet keyfile to login</div>
-	</div>
-	<div class="mt-3">
-		<p style="text-align: center;">
-			No wallet? Get one <a href="https://tokens.arweave.org/" target="_blank">here</a>!
-		</p>
-	</div>
-</dialog>
+<div class="modal fade" id="arweave-wallet-dialog" tabindex="-1" role="dialog" aria-labelledby="arweaveWalletDialog" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Unlock Wallet</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <div class="file-input">
+			<input class="clickable" type="file" id="file" bind:this={fileInput} on:change={handleUpload}>
+			<div id="desc">Drop an Arweave wallet keyfile to login</div>
+		</div>
+		<div class="mt-3">
+			<p style="text-align: center;">
+				No wallet? Get one <a href="https://tokens.arweave.org/" target="_blank">here</a>!
+			</p>
+		</div>
+      </div>
+    </div>
+  </div>
+</div>
