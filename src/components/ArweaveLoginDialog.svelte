@@ -1,24 +1,6 @@
 <script>
-	import { arweave } from './arweave.js';
-	// export let open = false;
-
-	// function login (files) {
-	// 	var fr = new FileReader()
-	// 	fr.onload = function (ev) {
-	// 		try {
-	// 			wallet = JSON.parse(ev.target.result)
-
-	// 			var public_address;
-	// 			arweave.wallets.jwkToAddress(wallet).then((address) => {
-	// 				public_address = address;
-	// 				update_login_state(true, public_address);
-	// 			});
-	// 		} catch (err) {
-	// 			alert('Error logging in: ' + err)
-	// 		}
-	// 	}
-	// 	fr.readAsText(files[0])
-	// }
+	import { arweave } from '../arweave.js';
+	
 	let fileInput;
 	function handleUpload(event) {
 		let fr = new FileReader();
@@ -40,15 +22,11 @@
 		console.log(fileInput.files)
 		fr.readAsText(fileInput.files[0]);
 	}
-
-	// function handleClickOutsideDialog(event) {
-	// 	if (open === true && event.target.closest('.loginDialog') === null) open = false;
-	// }
 </script>
 
 <style>
 	.file-input{
-		height: 100px;
+		height: 200px;
 		border: 2px dashed #62666f;
 		text-align: center;
 		display: flex;
@@ -57,7 +35,6 @@
 		position: relative;
 		margin: auto;
 		padding: 15px;
-		/* max-width: 300px; */
 	}
 	.file-input input[type=file]{
 		opacity: 0;
@@ -70,7 +47,7 @@
 </style>
 
 <div class="modal fade" id="arweave-wallet-dialog" tabindex="-1" role="dialog" aria-labelledby="arweaveWalletDialog" aria-hidden="true">
-  <div class="modal-dialog" role="document">
+  <div class="modal-dialog modal-dialog-centered" role="document">
     <div class="modal-content">
       <div class="modal-header">
         <h5 class="modal-title">Unlock Wallet</h5>

@@ -1,0 +1,25 @@
+<script>
+    import { arweave } from '../arweave.js';
+    
+</script>
+
+<style>
+
+
+</style>
+
+<div class="modal fade" id="create-family-tree" tabindex="-1" role="dialog" aria-labelledby="CreateFamilyTreeDialog" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Create Family Tree</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+
+      </div>
+    </div>
+  </div>
+</div>
