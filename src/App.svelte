@@ -1,5 +1,12 @@
 <script>
-	export let name;
+	import { arweave } from './arweave.js';
+	import ArweaveLoginDialog from './ArweaveLoginDialog.svelte';
+	arweave.network.getInfo().then(console.log);
+
+	let isLoginDialogOpen;
+	function handleClickLogin(event) {
+		isLoginDialogOpen = true;
+	}
 </script>
 
 <style>
@@ -8,4 +15,8 @@
 	}
 </style>
 
-<h1>Hello {name}!</h1>
+<ArweaveLoginDialog bind:open={isLoginDialogOpen} />
+
+<div>
+	<button on:click|stopPropagation={handleClickLogin}>Login</button>
+</div>
