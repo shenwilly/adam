@@ -47,7 +47,7 @@
 	<div class="row">
 		<div class="col mt-3 mb-3">
 			<button type="button" class="btn bg-green" on:click={goToIndex}>
-                <i class="fa fa-angle-double-left" aria-hidden="true"></i>Back
+                <i class="fa fa-angle-double-left" aria-hidden="true"></i> Back
             </button>
 		</div>
 	</div>
@@ -60,13 +60,13 @@
 		<div class="col">
             <form bind:this={form}>
                 <div class="form-row">
-                    <div class="form-group col-md-6">
-                    <label for="firstNamesInput">First Names</label>
-                    <input type="text" class="form-control" id="firstNamesInput" placeholder="First Names" required>
+                    <div class="form-group col-md-6 col-lg-4">
+                        <label for="firstNamesInput">First Names</label>
+                        <input type="text" class="form-control" id="firstNamesInput" placeholder="First Names" required>
                     </div>
-                    <div class="form-group col-md-6">
-                    <label for="lastNamesInput">Last Names</label>
-                    <input type="text" class="form-control" id="lastNamesInput" placeholder="Last Names">
+                    <div class="form-group col-md-6 col-lg-4">
+                        <label for="lastNamesInput">Last Names</label>
+                        <input type="text" class="form-control" id="lastNamesInput" placeholder="Last Names">
                     </div>
                 </div>
                 <div class="form-group">
@@ -74,7 +74,7 @@
                     <div class="row">
                         <div class="col">
                             <div class="form-check form-check-inline">
-                                <input class="form-check-input" type="radio" name="inlineRadioOptions" id="genderRadioMale" value="male">
+                                <input class="form-check-input" type="radio" name="inlineRadioOptions" id="genderRadioMale" value="male" required>
                                 <label class="form-check-label" for="genderRadioMale">Male</label>
                             </div>
                             <div class="form-check form-check-inline">
@@ -84,16 +84,21 @@
                         </div>
                     </div>
                 </div>
+                <div>
                 <div class="form-group">
                     <label for="birthplaceInput">Birthplace</label>
-                    <input type="text" class="form-control" id="birthplaceInput" placeholder="Birthplace city / area">
+                    <div class="row">
+                        <div class="col-md-12 col-lg-6">
+                            <input type="text" class="form-control" id="birthplaceInput" placeholder="Birthplace city / area" required>
+                        </div>
+                    </div>
                 </div>
                 <div class="form-group">
                     <label for="birthDateInput">Birthdate</label>
                     <div class="row">
                         <div class="col-md-4 col-sm-6 col-xs-12">
                             <select id="birthMonthInput" class="form-control" required>
-                                <option selected>Choose birth month</option>
+                                <option selected value="">Choose birth month</option>
                                 {#each month_list as month}
                                     <option value="{month.value}">{month.label}</option>
                                 {/each}

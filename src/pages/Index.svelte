@@ -3,7 +3,8 @@
     import { current_page } from '../router.js';
 
     function goToCreate(event) {
-        $current_page = "create";
+        $current_page = "tree";
+        // $current_page = "create";
 	}
 </script>
 
