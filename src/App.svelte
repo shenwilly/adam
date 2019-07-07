@@ -1,5 +1,5 @@
 <script>
-	import { arweave } from './arweave.js';
+	import { arweave, is_connected } from './arweave.js';
 	import ArweaveLoginDialog from './components/ArweaveLoginDialog.svelte';
 	import CreateFamilyTreeDialog from './components/CreateFamilyTreeDialog.svelte';
 	import Divider from './components/Divider.svelte';
@@ -8,6 +8,11 @@
 	function goToHome(event) {
 		console.log("home");
 	}
+	console.log(is_connected);
+	let is_connected_value;
+	const unsubscribe = is_connected.subscribe(value => {
+		is_connected_value = value;
+	});
 </script>
 
 <style>
@@ -15,7 +20,7 @@
 		font-family: 'DM Serif Display', serif;
 	}
 
-	.connect-wallet {
+	.white-border {
 		border: 1px white solid; 
 		border-radius: 7px;
 		padding: 3px 5px;
@@ -33,23 +38,37 @@
 <CreateFamilyTreeDialog />
 
 <div class="container">
-	<div class="row bg-dark-accent white py-1" style="border-radius: 0 0 10px 10px;">
-		<div class="col py-1 d-none d-sm-block">
-			<div class="text-center">Arweave wallet not connected. 
-				<span class="ml-1 connect-wallet clickable" data-toggle="modal" data-target="#arweave-wallet-dialog">
+	{#if is_connected_value === false}
+		<div class="row bg-dark-accent white py-1" style="border-radius: 0 0 10px 10px;">
+			<div class="col py-1 d-none d-sm-block">
+				<div class="text-center">Arweave wallet not connected. 
+					<span class="ml-1 white-border clickable font-weight-bold" data-toggle="modal" data-target="#arweave-wallet-dialog">
+						Click here to connect wallet
+					</span>
+				</div>
+			</div>
+			<div class="col py-1 d-xs-block d-sm-none">
+				<div class="text-center">Arweave wallet not connected.
+				<br>
+				<span class="white-border mt-1 mb-1 clickable font-weight-bold"  data-toggle="modal" data-target="#arweave-wallet-dialog">
 					Click here to connect wallet
 				</span>
+				</div>
 			</div>
 		</div>
-		<div class="col py-1 d-xs-block d-sm-none">
-			<div class="text-center">Arweave wallet not connected.
-			<br>
-			<span class="connect-wallet mt-1 mb-1 clickable"  data-toggle="modal" data-target="#arweave-wallet-dialog">
-				Click here to connect wallet
-			</span>
+	{:else}
+		<div class="row bg-dark-accent white py-1 d-flex flex-row" style="border-radius: 0 0 10px 10px;">
+			<div class="px-2">
+				<i class="fa fa-circle accent" aria-hidden="true"></i>
+				Connected
+			</div>
+			<div class="px-2 ml-auto">
+				<i class="fa fa-bell clickable" aria-hidden="true"></i>
+				<span class="white-border clickable ml-2">My Family Tree</span>
 			</div>
 		</div>
-	</div>
+	{/if}
+
 	<div class="row">
 		<div class="col mt-3 mb-3">
 			<div class="display-1 text-center app-title">

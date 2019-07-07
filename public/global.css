@@ -20,6 +20,10 @@ body {
 	background-color: #a5d6a7;
 }
 
+.accent {
+	color: #a5d6a7 !important;
+}
+
 .bg-light {
 	background-color: #ffffff;
 }

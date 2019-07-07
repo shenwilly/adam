@@ -1,7 +1,8 @@
 <script>
-	import { arweave } from '../arweave.js';
+	import { arweave, is_connected, public_address } from '../arweave.js';
 	
 	let fileInput;
+	let closeModalButton;
 	function handleUpload(event) {
 		let fr = new FileReader();
 		fr.onload = function (ev) {
@@ -9,11 +10,10 @@
 				let wallet = JSON.parse(ev.target.result)
 				console.log(wallet);
 
-				let public_address;
 				arweave.wallets.jwkToAddress(wallet).then((address) => {
-					public_address = address;
-					// update_login_state(true, public_address);
-					console.log(public_address);
+					is_connected.set(true);
+					public_address.set(address);
+					closeModalButton.click();
 				});
 			} catch (err) {
 				alert('Error logging in: ' + err)
@@ -46,12 +46,12 @@
 	}
 </style>
 
-<div class="modal fade" id="arweave-wallet-dialog" tabindex="-1" role="dialog" aria-labelledby="arweaveWalletDialog" aria-hidden="true">
+<div class="modal fade" id="arweave-wallet-dialog" tabindex="-1" role="dialog" >
   <div class="modal-dialog modal-dialog-centered" role="document">
     <div class="modal-content">
       <div class="modal-header">
         <h5 class="modal-title">Unlock Wallet</h5>
-        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+        <button type="button" bind:this={closeModalButton} class="close" data-dismiss="modal" aria-label="Close">
           <span aria-hidden="true">&times;</span>
         </button>
       </div>
