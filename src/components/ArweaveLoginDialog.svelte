@@ -61,7 +61,7 @@
 			{#if login_success === false}
 				<div class="file-input">
 					<input class="clickable" type="file" id="file" bind:this={file_input} on:change={handleUpload}>
-					<div id="desc">Drop an Arweave wallet keyfile to login</div>
+					<div id="desc">Drop an Arweave wallet keyfile to start</div>
 				</div>
 				<div class="mt-3">
 					<p style="text-align: center;">

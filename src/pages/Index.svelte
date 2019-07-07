@@ -47,7 +47,11 @@
 		  {#if $is_connected === true && $user_profile !== undefined}
 		  	<button type="button" class="btn bg-accent" on:click={goToManage}>Manage Family Tree</button>
 		  {:else}
-		  	<button type="button" class="btn bg-accent" on:click={goToCreate}>Create Family Tree</button>
+		  	{#if $is_connected === false}
+		  		<button type="button" class="btn bg-accent" data-toggle="modal" data-target="#arweave-wallet-dialog">Create Family Tree</button>
+			{:else}
+		  		<button type="button" class="btn bg-accent" on:click={goToCreate}>Create Family Tree</button>
+			{/if}
 		  {/if}
 		</div>
 	</div>
