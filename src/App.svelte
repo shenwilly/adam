@@ -4,7 +4,6 @@
 	import FamilyTree from './pages/FamilyTree.svelte';
 	import SiteHeader from './components/SiteHeader.svelte';
 	import ArweaveLoginDialog from './components/ArweaveLoginDialog.svelte';
-	import CreateFamilyTreeDialog from './components/CreateFamilyTreeDialog.svelte';
 	import { arweave, is_connected } from './arweave.js';
 	import { current_page } from './router.js';
 	
@@ -35,4 +34,3 @@
 </div>
 
 <ArweaveLoginDialog />
-<CreateFamilyTreeDialog />

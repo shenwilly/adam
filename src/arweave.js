@@ -111,3 +111,60 @@ export async function create_profile(data_map, is_self=false) {
     console.log(tx.id)
     await arweave.transactions.post(tx);
 }
+
+export async function fetch_family_members(family_id) {
+    let query =
+        {
+            op: 'and',
+            expr1: {
+                op: 'equals',
+                expr1: 'App-Name',
+                expr2: 'adam-0'
+            },
+            expr2: {
+                op: 'and',
+                expr1: {
+                    op: 'equals',
+                    expr1: 'from',
+                    expr2: address,
+                },
+                expr2: {
+                    op: 'equals',
+                    expr1: 'self',
+                    expr2: 'false',
+                }
+            },
+        };
+        
+    const res = await arweave.api.post(`arql`, query)
+    var tx_rows = []
+    // res.data = ''
+    if (res.data != '') {
+        tx_rows = await Promise.all(res.data.map(async function (id, i) {
+            let tx = await arweave.transactions.get(id);
+
+            let tx_data = tx.get('data', {decode: true, string: true});
+            let tx_object = JSON.parse(tx_data);
+            tx_object['id'] = id;
+            tx_object['unix_timestamp'] = '0'
+            tx.get('tags').forEach(tag => {
+                let key = tag.get('name', { decode: true, string: true })
+                let value = tag.get('value', { decode: true, string: true })
+                if (key === 'Unix-Time') tx_object['unix_timestamp'] = value
+                else if (key === 'spouse') tx_object['spouse_id'] = value;
+                else if (key === 'family') tx_object['family_id'] = value;
+            })
+            
+            let profile = new Profile(tx_object);
+            return profile;
+        }))
+    } else {
+        return;
+    }
+
+    tx_rows.sort((a, b) => (Number(a.unixTime) - Number(b.unixTime)))
+    let user_profile = tx_rows[0];
+
+    console.log(user_profile)
+    return user_profile;
+}

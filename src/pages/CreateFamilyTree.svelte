@@ -106,7 +106,7 @@
                                 {/each}
                             </select>
                         </div>
-                        <div class="col-md-2 col-sm-4 col-xs-12">
+                        <div class="col-md-3 col-sm-4 col-xs-12">
                             <input name="birth_year" type="number" min="0" max="{current_year}" required class="form-control" id="birthYearInput" placeholder="Birth year">
                         </div>
                     </div>

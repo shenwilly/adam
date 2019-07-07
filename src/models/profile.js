@@ -13,6 +13,20 @@ export class Profile {
         this.unix_timestamp = params.unix_timestamp;
     }
 
+    fullname() {
+        let name = this.first_name;
+        if (this.last_name.length > 0) name += " " + this.last_name;
+        return name;
+    }
+
+    sex() {
+        return this.gender.charAt(0).toUpperCase() + this.gender.slice(1);
+    }
+
+    birth() {
+        var months = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+        return months[this.birth_month] + " " + this.birth_year.toString() + ", " + this.birthplace;
+    }
     // Adding a method to the constructor
     // greet() {
     //     return `${this.name} says hello.`;
