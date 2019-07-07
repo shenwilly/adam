@@ -8,18 +8,15 @@
 		fr.onload = function (ev) {
 			try {
 				let wallet = JSON.parse(ev.target.result)
-				console.log(wallet);
-
 				arweave.wallets.jwkToAddress(wallet).then((address) => {
 					is_connected.set(true);
 					public_address.set(address);
 					closeModalButton.click();
 				});
 			} catch (err) {
-				alert('Error logging in: ' + err)
+				alert('Error logging in: ' + err);
 			}
 		}
-		console.log(fileInput.files)
 		fr.readAsText(fileInput.files[0]);
 	}
 </script>

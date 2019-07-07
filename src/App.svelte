@@ -8,11 +8,6 @@
 	function goToHome(event) {
 		console.log("home");
 	}
-	console.log(is_connected);
-	let is_connected_value;
-	const unsubscribe = is_connected.subscribe(value => {
-		is_connected_value = value;
-	});
 </script>
 
 <style>
@@ -38,7 +33,7 @@
 <CreateFamilyTreeDialog />
 
 <div class="container">
-	{#if is_connected_value === false}
+	{#if $is_connected === false}
 		<div class="row bg-dark-accent white py-1" style="border-radius: 0 0 10px 10px;">
 			<div class="col py-1 d-none d-sm-block">
 				<div class="text-center">Arweave wallet not connected. 
