@@ -4,7 +4,7 @@
 
     function goToCreate(event) {
         $current_page = "create";
-    }
+	}
 </script>
 
 <style>
