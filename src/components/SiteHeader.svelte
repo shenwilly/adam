@@ -28,8 +28,8 @@
 				Connected
 			</div>
 			<div class="px-2 ml-auto">
-				<i class="fa fa-bell clickable" aria-hidden="true"></i>
-				<span class="white-border clickable ml-2">My Family Tree</span>
+				<i class="fa fa-bell clickable mx-2" aria-hidden="true"></i>
+				<!-- <span class="white-border clickable ml-2">My Family Tree</span> -->
 			</div>
 		</div>
 	{/if}

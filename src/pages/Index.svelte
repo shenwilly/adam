@@ -1,10 +1,14 @@
 <script>
     import Divider from '../components/Divider.svelte';
-    import { current_page } from '../router.js';
+	import { current_page } from '../router.js';
+	import { is_connected, user_profile } from '../arweave.js';
 
     function goToCreate(event) {
+        // $current_page = "tree";
+        $current_page = "create";
+	}
+    function goToManage(event) {
         $current_page = "tree";
-        // $current_page = "create";
 	}
 </script>
 
@@ -40,13 +44,17 @@
 	<div class="row">
 		<div class="col d-flex justify-content-center mt-3">
 		  <!-- <button type="button" class="btn bg-accent" data-toggle="modal" data-target="#create-family-tree">Create Family Tree</button> -->
-		  <button type="button" class="btn bg-accent" on:click={goToCreate}>Create Family Tree</button>
+		  {#if $is_connected === true && $user_profile !== undefined}
+		  	<button type="button" class="btn bg-accent" on:click={goToManage}>Manage Family Tree</button>
+		  {:else}
+		  	<button type="button" class="btn bg-accent" on:click={goToCreate}>Create Family Tree</button>
+		  {/if}
 		</div>
 	</div>
 	<Divider />
 	<div class="row">
 		<div class="col">
-			<div class="text-center">Discover your ancestry.</div>
+			<div class="text-center">Discover and track your ancestry.</div>
 		</div>
 	</div>
 	<div class="row">

@@ -1,6 +1,7 @@
 <script>
     import { current_page } from '../router.js';
     import { onMount } from 'svelte';
+    import { create_profile } from '../arweave.js'
 
     let month_list = [
         {value: 1, label: 'January'},
@@ -22,21 +23,22 @@
         $current_page = "index";
     }
 
-    function submitCreateFamilyTree() {
-        console.log("createing")
-    }
-
     let form;
 	onMount(() => {
         form.addEventListener("submit", 
         function(event) {
             event.preventDefault();
-
-            // write stuff
             if (form.checkValidity()) submitCreateFamilyTree();
-
         });
 	});
+
+    function submitCreateFamilyTree() {
+        console.log("creating");
+        let form_data = new FormData(form);
+        let form_data_map = {};
+        form_data.forEach((value, key) => {form_data_map[key] = value});
+        create_profile(form_data_map, true);
+    }
 </script>
 
 <style>
@@ -53,7 +55,7 @@
 	</div>
 	<div class="row">
         <div class="col mb-2">
-            <h3 class="font-weight-bold">Create Family Tree</h3>
+            <h3 class="font-weight-bold">Create Your Profile</h3>
         </div>
 	</div>
 	<div class="row">
@@ -62,11 +64,11 @@
                 <div class="form-row">
                     <div class="form-group col-md-6 col-lg-4">
                         <label for="firstNamesInput">First Names</label>
-                        <input type="text" class="form-control" id="firstNamesInput" placeholder="First Names" required>
+                        <input type="text" name="first_name" class="form-control" id="firstNamesInput" placeholder="First Names" required>
                     </div>
                     <div class="form-group col-md-6 col-lg-4">
                         <label for="lastNamesInput">Last Names</label>
-                        <input type="text" class="form-control" id="lastNamesInput" placeholder="Last Names">
+                        <input type="text" name="last_name" class="form-control" id="lastNamesInput" placeholder="Last Names">
                     </div>
                 </div>
                 <div class="form-group">
@@ -74,11 +76,11 @@
                     <div class="row">
                         <div class="col">
                             <div class="form-check form-check-inline">
-                                <input class="form-check-input" type="radio" name="inlineRadioOptions" id="genderRadioMale" value="male" required>
+                                <input class="form-check-input" type="radio" name="gender" id="genderRadioMale" value="male" required>
                                 <label class="form-check-label" for="genderRadioMale">Male</label>
                             </div>
                             <div class="form-check form-check-inline">
-                                <input class="form-check-input" type="radio" name="inlineRadioOptions" id="genderRadioFemale" value="female">
+                                <input class="form-check-input" type="radio" name="gender" id="genderRadioFemale" value="female">
                                 <label class="form-check-label" for="genderRadioFemale">Female</label>
                             </div>
                         </div>
@@ -89,7 +91,7 @@
                     <label for="birthplaceInput">Birthplace</label>
                     <div class="row">
                         <div class="col-md-12 col-lg-6">
-                            <input type="text" class="form-control" id="birthplaceInput" placeholder="Birthplace city / area" required>
+                            <input type="text" name="birthplace" class="form-control" id="birthplaceInput" placeholder="Birthplace city / area" required>
                         </div>
                     </div>
                 </div>
@@ -97,7 +99,7 @@
                     <label for="birthDateInput">Birthdate</label>
                     <div class="row">
                         <div class="col-md-4 col-sm-6 col-xs-12">
-                            <select id="birthMonthInput" class="form-control" required>
+                            <select name="birth_month" id="birthMonthInput" class="form-control" required>
                                 <option selected value="">Choose birth month</option>
                                 {#each month_list as month}
                                     <option value="{month.value}">{month.label}</option>
@@ -105,7 +107,7 @@
                             </select>
                         </div>
                         <div class="col-md-2 col-sm-4 col-xs-12">
-                            <input type="number" min="0" max="{current_year}" required class="form-control" id="birthYearInput" placeholder="Birth year">
+                            <input name="birth_year" type="number" min="0" max="{current_year}" required class="form-control" id="birthYearInput" placeholder="Birth year">
                         </div>
                     </div>
                 </div>
