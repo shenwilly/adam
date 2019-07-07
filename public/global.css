@@ -8,12 +8,20 @@ body {
 	cursor: pointer;
 }
 
+.default {
+	color: #000000;
+}
+
 .white {
 	color: white;
 }
 
-.bg-primary {
+.bg-green {
 	background-color: #f1f8e9 !important;
+}
+
+.green {
+	color: #f1f8e9 !important;
 }
 
 .bg-accent {
@@ -39,6 +47,12 @@ body {
 .bg-dark-accent, 
 .bg-accent.btn:focus, .bg-accent.btn:hover {
 	background-color: #75a478;
+}
+
+.white-border {
+	border: 1px white solid; 
+	border-radius: 7px;
+	padding: 3px 5px;
 }
 
 /* html, body {
