@@ -1,7 +1,8 @@
 <script>
-    import { arweave } from '../arweave.js';
+    import { create_profile } from '../arweave.js';
     import { onMount } from 'svelte';
-    
+
+    export let profile_data;
     let month_list = [
         {value: 1, label: 'January'},
         {value: 2, label: 'February'},
@@ -23,16 +24,22 @@
         form.addEventListener("submit", 
         function(event) {
             event.preventDefault();
-            if (form.checkValidity()) submitCreateFamilyTree();
+            if (form.checkValidity()) submitCreateFamilyMember();
         });
 	});
 
-    function submitCreateFamilyTree() {
+    function submitCreateFamilyMember() {
         console.log("creating");
-        // let form_data = new FormData(form);
-        // let form_data_map = {};
-        // form_data.forEach((value, key) => {form_data_map[key] = value});
-        // create_profile(form_data_map, true);
+        let form_data = new FormData(form);
+        let form_data_map = {};
+        form_data.forEach((value, key) => {form_data_map[key] = value});
+
+        if (profile_data !== undefined) {
+            form_data_map["reference_id"] = profile_data.reference_id;
+            form_data_map["family_id"] = profile_data.family_id;
+            form_data_map["role"] = profile_data.role.toLowerCase();
+            create_profile(form_data_map, false);
+        }
     }
 </script>
 
@@ -45,7 +52,7 @@
   <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
     <div class="modal-content">
       <div class="modal-header">
-        <h5 class="modal-title">Add Family Member</h5>
+        <h5 class="modal-title">Add {profile_data !== undefined ? profile_data.role : 'Family Member' }</h5>
         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
           <span aria-hidden="true">&times;</span>
         </button>

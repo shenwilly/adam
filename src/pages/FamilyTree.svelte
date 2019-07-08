@@ -2,12 +2,43 @@
     import CreateFamilyMemberDialog from '../components/CreateFamilyMemberDialog.svelte';
     import { current_page } from '../router.js';
     import { onMount } from 'svelte';
-    import { user_profile } from '../arweave.js';
+    import { user_profile, fetch_family_members } from '../arweave.js';
 
     console.log($user_profile);
     
     function goToIndex(event) {
         $current_page = "index";
+    }
+    
+    let profile_data;
+    function showCreateParent(event) {
+        console.log(selected_member.family_id);
+        profile_data = {
+            family_id: selected_member.family_id,
+            reference_id: selected_member.id,
+            role: "Parent"
+        };
+        showCreateDialog();
+    }
+    function showCreateSpouse(event) {
+        profile_data = {
+            family_id: selected_member.family_id,
+            reference_id: selected_member.id,
+            role: "Spouse"
+        };
+        showCreateDialog();
+    }
+    function showCreateChild(event) {
+        profile_data = {
+            family_id: selected_member.family_id,
+            reference_id: selected_member.id,
+            role: "Child"
+        };
+        showCreateDialog();
+    }
+    function showCreateDialog() {
+        let $j = jQuery.noConflict();
+        $j('#create-family-member-dialog').modal('show');
     }
 
     // let selected_member_id;
@@ -16,7 +47,7 @@
     family_members_map[$user_profile.id] = $user_profile;
 
     let data = [];
-    let profile_data = {
+    let user_profile_data = {
         name: $user_profile.fullname(),
         class: "node",
         textClass: "nodeText",
@@ -30,7 +61,7 @@
         //     "id": '1',
         // }
     };
-    data.push(profile_data);
+    data.push(user_profile_data);
     // let data = [{
     //     name: "Father",
     //     class: "node",
@@ -119,6 +150,8 @@
 
 	onMount(() => {
         dTree.init(data, options);
+
+        fetch_family_members($user_profile.family_id);
 	});
 </script>
 
@@ -136,7 +169,9 @@
 	</div>
 	<div class="row">
         <div class="col mb-2">
-            <h3 class="font-weight-bold">Family Tree</h3>
+            <span>
+                <h3 class="font-weight-bold">Family Tree</h3> (click a family member to see their information)
+            </span>
         </div>
 	</div>
 	<div class="row">
@@ -166,15 +201,15 @@
             </div>
             <div class="row">
                 <div class="col">
-                    <span>Father: Teddy Roosevelt</span>
-                    <i class="fa fa-pencil-square-o dark-accent clickable" aria-hidden="true"></i>
+                    <span>Father: -</span>
+                    <i class="fa fa-plus-square dark-accent clickable" on:click={showCreateParent} aria-hidden="true"></i>
                 </div>
             </div>
             <div class="row">
                 <div class="col">
-                    <!-- <p>Spouse: Annisa Cohen</p> -->
-                    <span>Spouse: </span>
-                    <i class="fa fa-plus-square dark-accent clickable" aria-hidden="true"></i>
+                    <p>Spouse: Annisa Cohen</p>
+                    <!-- <span>Spouse: </span> -->
+                    <i class="fa fa-pencil-square-o dark-accent clickable" aria-hidden="true"></i>
                 </div>
             </div>
             <div class="row">
@@ -192,4 +227,4 @@
     {/if}
 </div>
 
-<CreateFamilyMemberDialog />
+<CreateFamilyMemberDialog {profile_data}/>
