@@ -1,7 +1,7 @@
 <script>
     import Divider from '../components/Divider.svelte';
 	import { current_page } from '../router.js';
-	import { is_connected, user_profile } from '../arweave.js';
+	import { is_connected, user_profile, search_family_tree } from '../arweave.js';
 
     function goToCreate(event) {
         // $current_page = "tree";
@@ -9,6 +9,17 @@
 	}
     function goToManage(event) {
         $current_page = "tree";
+	}
+
+	let search_query = '';
+	let is_searching = false;
+	let search_results;
+	async function handleSearch(event) {
+		if (event.key === "Enter") {
+			is_searching = true;
+			search_results = await search_family_tree(search_query.toLowerCase());
+			is_searching = false;
+		}
 	}
 </script>
 
@@ -63,7 +74,9 @@
 	</div>
 	<div class="row">
 		<div class="offset-sm-1 offset-md-2 col-sm-10 col-md-8 mt-3">
-		  <input type="text" class="form-control" placeholder="Type a person's name or birth location here">
+		  <input type="text" class="form-control" placeholder="Type a person's name or birth location here" 
+		  	bind:value={search_query}
+			on:keyup={handleSearch}>
 		</div>
 	</div>
 </div>
