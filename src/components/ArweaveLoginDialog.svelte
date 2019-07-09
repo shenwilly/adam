@@ -11,11 +11,11 @@
 		fr.onload = async function (ev) {
 			try {
 				await login(ev.target.result);
-				processing_wallet = false;
 				login_success = true;
 			} catch (err) {
 				alert('Error logging in: ' + err);
 			}
+			processing_wallet = false;
 		}
 		fr.readAsText(file_input.files[0]);
 	}
