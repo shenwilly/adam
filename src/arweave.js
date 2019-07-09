@@ -6,7 +6,9 @@ export const public_address = writable("");
 export const wallet = writable("");
 export const user_profile = writable(undefined);
 export const arweave = Arweave.init({host: 'arweave.net', port: 443, protocol: 'https'});
+
 export const notifications = writable([]);
+export const new_notifications_counter = writable(0);
   
 export async function login(wallet_data) {
     wallet.set(JSON.parse(wallet_data));
