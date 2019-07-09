@@ -129,6 +129,8 @@
                     data.marriages.push({
                         spouse: spouseData,
                     });
+                    family_members_map[profile.id].spouse = spouse;
+                    family_members_map[spouseRelations[i].id].spouse = profile;
                     break;
                 }
             };
@@ -153,6 +155,8 @@
                     let child = family_members_map[child_id];
                     let child_data = generateTree(child);
                     data.children.push(child_data);
+                    family_members_map[profile.id].child = child;
+                    family_members_map[child_id].parent = profile;
                 });
             } else {
                 data.marriages[0].children = [];
@@ -160,6 +164,8 @@
                     let child = family_members_map[child_id];
                     let child_data = generateTree(child);
                     data.marriages[0].children.push(child_data);
+                    family_members_map[profile.id].child = child;
+                    family_members_map[child_id].parent = profile;
                 });
             }
             return data;
@@ -294,28 +300,34 @@
                     </h4> 
                 </div>
             </div>
-            <div class="row">
+            <div class="row mb-2">
                 <div class="col">
-                    <p>Sex: {selected_member.sex()}</p>
+                    <span>Sex: {selected_member.sex()}</span>
                 </div>
             </div>
-            <div class="row">
+            <div class="row mb-2">
                 <div class="col">
-                    <p>Birth: {selected_member.birth()}</p>
+                    <span>Birth: {selected_member.birth()}</span>
                 </div>
             </div>
-            <div class="row">
+            <div class="row mb-2">
                 <div class="col">
-                    <span>Father: -</span>
-                    <i class="fa fa-plus-square dark-accent clickable" on:click={showCreateParent} aria-hidden="true"></i>
+                    <span>Father: {selected_member.parent ? selected_member.parent.fullname() : '-' }</span>
+                    {#if selected_member.parent}
+                        <i class="fa fa-pencil-square-o dark-accent clickable" aria-hidden="true"></i>
+                    {:else}
+                        <i class="fa fa-plus-square dark-accent clickable" on:click={showCreateParent} aria-hidden="true"></i>
+                    {/if}
                 </div>
             </div>
-            <div class="row">
+            <div class="row mb-2">
                 <div class="col">
-                    <p>Spouse: Annisa Cohen</p>
-                    <!-- <span>Spouse: </span> -->
-                    <i class="fa fa-pencil-square-o dark-accent clickable" aria-hidden="true"></i>
-                    <i class="fa fa-plus-square dark-accent clickable" on:click={showCreateSpouse} aria-hidden="true"></i>
+                    <span>Spouse: {selected_member.spouse ? selected_member.spouse.fullname() : '-' }</span>
+                    {#if selected_member.spouse}
+                        <i class="fa fa-pencil-square-o dark-accent clickable" aria-hidden="true"></i>
+                    {:else}
+                        <i class="fa fa-plus-square dark-accent clickable" on:click={showCreateSpouse} aria-hidden="true"></i>
+                    {/if}
                 </div>
             </div>
             <div class="row">

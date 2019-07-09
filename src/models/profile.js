@@ -12,6 +12,7 @@ export class Profile {
         this.reference_id = params.reference_id;
         this.unix_timestamp = params.unix_timestamp;
 
+        this.parent = params.parent;
         this.spouse = params.spouse;
         this.children = params.children;
     }
