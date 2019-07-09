@@ -13,7 +13,7 @@
 	}
 
 	.notification-box {
-		padding-top: 30px;
+		padding-top: 37px;
 		/* border: 1px solid #a5d6a7;  */
 		border-radius: 3px;
 		width: 30vw;
@@ -63,12 +63,12 @@
 		</div>
 	{:else}
 		<div class="row bg-dark-accent white py-1 d-flex flex-row" style="border-radius: 0 0 10px 10px;">
-			<div class="px-2">
+			<div class="px-2 mt-1">
 				<i class="fa fa-circle accent" aria-hidden="true"></i>
 				Connected
 			</div>
-			<div class="px-2 ml-auto">
-				<i class="fa fa-bell clickable mx-2" aria-hidden="true" on:click={toggleNotifications}></i>
+			<div class="white-border px-2 ml-auto clickable mr-2" on:click={toggleNotifications}>
+				Notifications <i class="fa fa-bell" aria-hidden="true"></i>
 				<!-- <span class="white-border clickable ml-2">My Family Tree</span> -->
 			</div>
 		</div>
