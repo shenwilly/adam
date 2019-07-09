@@ -6,6 +6,7 @@ export const public_address = writable("");
 export const wallet = writable("");
 export const user_profile = writable(undefined);
 export const arweave = Arweave.init({host: 'arweave.net', port: 443, protocol: 'https'});
+export const notifications = writable([]);
   
 export async function login(wallet_data) {
     wallet.set(JSON.parse(wallet_data));
@@ -101,7 +102,7 @@ export async function fetch_family_members(family_id) {
 
             let tx_data = tx.get('data', {decode: true, string: true});
             let tx_object = JSON.parse(tx_data);
-            console.log(tx_object);
+            // console.log(tx_object);
             tx_object['id'] = id;
             tx_object['unix_timestamp'] = '0'
             tx.get('tags').forEach(tag => {

@@ -41,7 +41,6 @@
         $j('#create-family-member-dialog').modal('show');
     }
 
-    // let selected_member_id;
     let selected_member;
     let family_members_map = {};
     family_members_map[$user_profile.id] = $user_profile;
@@ -54,14 +53,119 @@
         extra: {
             "id": $user_profile.id,
         }
-        // name: "David Aban Shacklestorm",
-        // class: "node",
-        // textClass: "nodeText",
-        // extra: {
-        //     "id": '1',
-        // }
     };
     data.push(user_profile_data);
+
+    function createFamilyTree(family_members) {
+        if (family_members === undefined) return;
+
+        let rootMember;
+        let originalMember;
+        let parentMembers = [];
+        let childMembers = [];
+        let spouseMembers = [];
+        let parentRelations = [];
+        let childRelations = [];
+        let spouseRelations = [];
+        // let family_members_map = {}
+        family_members.forEach(family_member => {
+            family_members_map[family_member.id] = family_member;
+            if (family_member.role === "parent") {
+                parentMembers.push(family_member);
+                parentRelations.push({
+                    id: family_member.id,
+                    reference_id: family_member.reference_id
+                });
+            } else if (family_member.role === "child") {
+                childMembers.push(family_member);
+                childRelations.push({
+                    id: family_member.id,
+                    reference_id: family_member.reference_id
+                });
+            } else if (family_member.role === "spouse") {
+                spouseMembers.push(family_member);
+                spouseRelations.push({
+                    id: family_member.id,
+                    reference_id: family_member.reference_id
+                });
+            } else {
+                originalMember = family_member;
+            }
+        });
+        parentRelations.forEach(parentReference => {
+            let index = -1;
+            for(var i = 0; i < parentMembers.length; i++) {
+                if (parentMembers[i].id == parentReference.reference_id) {
+                    index = i;
+                    break;
+                }
+            }
+            if (index >= 0) {
+                parentMembers.splice(index, 1);
+            }
+        });
+        rootMember = parentMembers[0];
+        // console.log(rootMember);
+        // console.log(originalMember);
+        // console.log(parentRelations);
+        // console.log(family_members_map);
+        
+        let treeData = {};
+        treeData = generateTree(rootMember);
+        // data = [treeData,];
+        function generateTree(profile) {
+            let data = {
+                name: profile.fullname(),
+                class: "node",
+                textClass: "nodeText",
+                extra: {"id": profile.id},
+            }
+
+            for(var i = 0; i < spouseRelations.length; i++) {
+                if (spouseRelations[i].reference_id == profile.id) {
+                    let spouse = family_members_map[spouseRelations[i].id];
+                    let spouseData = generateTree(spouse);
+                    data.marriages = [];
+                    data.marriages.push({
+                        spouse: spouseData,
+                    });
+                    break;
+                }
+            };
+        
+            let children_ids = [];
+            for(var i = 0; i < parentRelations.length; i++) {
+                if (parentRelations[i].id == profile.id) {
+                    let child_id = parentRelations[i].reference_id;
+                    if (!children_ids.includes(child_id)) children_ids.push(child_id);
+                }
+            };
+            for(var i = 0; i < childRelations.length; i++) {
+                if (childRelations[i].reference_id == profile.id) {
+                    let child_id = childRelations[i].id;
+                    if (!children_ids.includes(child_id)) children_ids.push(child_id);
+                }
+            };
+            
+            if (data["marriages"] === undefined || data["marriages"].length == 0) {
+                data.children = [];
+                children_ids.forEach((child_id) => {
+                    let child = family_members_map[child_id];
+                    let child_data = generateTree(child);
+                    data.children.push(child_data);
+                });
+            } else {
+                data.marriages[0].children = [];
+                children_ids.forEach((child_id) => {
+                    let child = family_members_map[child_id];
+                    let child_data = generateTree(child);
+                    data.marriages[0].children.push(child_data);
+                });
+            }
+            return data;
+        };
+        return treeData;
+    }
     // let data = [{
     //     name: "Father",
     //     class: "node",
@@ -148,10 +252,11 @@
         }
     };
 
-	onMount(() => {
-        dTree.init(data, options);
-
-        fetch_family_members($user_profile.family_id);
+	onMount(async () => {
+        let family_members_data = await fetch_family_members($user_profile.family_id);
+        let data = createFamilyTree(family_members_data);
+        console.log("??", data);
+        dTree.init([data,], options);
 	});
 </script>
 
@@ -210,12 +315,13 @@
                     <p>Spouse: Annisa Cohen</p>
                     <!-- <span>Spouse: </span> -->
                     <i class="fa fa-pencil-square-o dark-accent clickable" aria-hidden="true"></i>
+                    <i class="fa fa-plus-square dark-accent clickable" on:click={showCreateSpouse} aria-hidden="true"></i>
                 </div>
             </div>
             <div class="row">
                 <div class="col">
                     <span>Children: </span>
-                    <i class="fa fa-plus-square dark-accent clickable" aria-hidden="true"></i>
+                    <i class="fa fa-plus-square dark-accent clickable" on:click={showCreateChild} aria-hidden="true"></i>
                     <ul>
                         <li>Anna Bethany  <i class="fa fa-pencil-square-o dark-accent clickable" aria-hidden="true"></i></li>
                         <li>Aban Bethany  <i class="fa fa-pencil-square-o dark-accent clickable" aria-hidden="true"></i></li>
