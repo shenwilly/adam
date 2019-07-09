@@ -151,20 +151,25 @@
             
             if (data["marriages"] === undefined || data["marriages"].length == 0) {
                 data.children = [];
+                family_members_map[profile.id].children = [];
                 children_ids.forEach((child_id) => {
                     let child = family_members_map[child_id];
                     let child_data = generateTree(child);
                     data.children.push(child_data);
-                    family_members_map[profile.id].child = child;
+                    family_members_map[profile.id].children.push(child);
                     family_members_map[child_id].parent = profile;
                 });
             } else {
                 data.marriages[0].children = [];
+                family_members_map[profile.id].children = [];
+                family_members_map[family_members_map[profile.id].spouse.id].children = [];
                 children_ids.forEach((child_id) => {
                     let child = family_members_map[child_id];
                     let child_data = generateTree(child);
                     data.marriages[0].children.push(child_data);
-                    family_members_map[profile.id].child = child;
+                    family_members_map[profile.id].children.push(child);
+                    family_members_map[family_members_map[profile.id].spouse.id].children.push(child);
+        
                     family_members_map[child_id].parent = profile;
                 });
             }
@@ -310,6 +315,7 @@
                     <span>Birth: {selected_member.birth()}</span>
                 </div>
             </div>
+            {#if selected_member.role !== "spouse"}
             <div class="row mb-2">
                 <div class="col">
                     <span>Father: {selected_member.parent ? selected_member.parent.fullname() : '-' }</span>
@@ -320,6 +326,7 @@
                     {/if}
                 </div>
             </div>
+            {/if}
             <div class="row mb-2">
                 <div class="col">
                     <span>Spouse: {selected_member.spouse ? selected_member.spouse.fullname() : '-' }</span>
@@ -330,15 +337,17 @@
                     {/if}
                 </div>
             </div>
-            <div class="row">
+            <div class="row mb-4">
                 <div class="col">
                     <span>Children: </span>
                     <i class="fa fa-plus-square dark-accent clickable" on:click={showCreateChild} aria-hidden="true"></i>
+                    {#if selected_member.children}
                     <ul>
-                        <li>Anna Bethany  <i class="fa fa-pencil-square-o dark-accent clickable" aria-hidden="true"></i></li>
-                        <li>Aban Bethany  <i class="fa fa-pencil-square-o dark-accent clickable" aria-hidden="true"></i></li>
+                        {#each selected_member.children as child}
+                            <li>{child.fullname()}  <i class="fa fa-pencil-square-o dark-accent clickable" aria-hidden="true"></i></li>
+                        {/each}
                     </ul>
-
+                    {/if}
                 </div>
             </div>
         </div>
