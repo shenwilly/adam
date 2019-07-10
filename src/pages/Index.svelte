@@ -49,7 +49,7 @@
 	</div>
 	<div class="row">
 		<div class="col">
-			<div class="text-center">Create and store your own family tree. Forever.</div>
+			<div class="text-center">Create and store your own family tree. <strong>Forever.</strong></div>
 		</div>
 	</div>
 	<div class="row">
@@ -69,7 +69,7 @@
 	<Divider />
 	<div class="row">
 		<div class="col">
-			<div class="text-center">Discover and track your ancestry.</div>
+			<div class="text-center">Discover and trace your ancestry.</div>
 		</div>
 	</div>
 	<div class="row">
