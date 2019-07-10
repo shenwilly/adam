@@ -139,9 +139,18 @@ export async function create_profile(data_map, is_self=false) {
     var unixTime = Math.round((new Date()).getTime() / 1000)
 
     var keywords = [];
-    if ('first_name' in data_map) keywords.push(data_map['first_name'].toLowerCase());
-    if ('last_name' in data_map) keywords.push(data_map['last_name'].toLowerCase());
-    if ('birthplace' in data_map) keywords.push(data_map['birthplace'].toLowerCase());
+    if ('first_name' in data_map) {
+        var new_keywords = data_map['first_name'].replace(',', '').toLowerCase().split(" ");
+        keywords.push(...new_keywords);
+    }
+    if ('last_name' in data_map) {
+        var new_keywords = data_map['last_name'].replace(',', '').toLowerCase().split(" ");
+        keywords.push(...new_keywords);
+    }
+    if ('birthplace' in data_map) {
+        var new_keywords = data_map['birthplace'].replace(',', '').toLowerCase().split(" ");
+        keywords.push(...new_keywords);        
+    }
     
     let wallet_value;
     wallet.subscribe(value => {
@@ -178,6 +187,8 @@ export async function create_profile(data_map, is_self=false) {
 }
 
 export async function search_family_tree(search_query) {
+    var keywords = search_query.split(" ");
+    
     let query =
         {
             op: 'and',
@@ -186,16 +197,14 @@ export async function search_family_tree(search_query) {
                 expr1: 'App-Name',
                 expr2: 'adam-0'
             },
-            expr2: {
-                op: 'equals',
-                expr1: 'keyword',
-                expr2: search_query,
-            },
+            expr2: {},
         };
+
+    var query_map = generateQueryMap(keywords);
+    query.expr2 = query_map;
         
     const res = await arweave.api.post(`arql`, query)
     var tx_rows = []
-    // res.data = ''
     if (res.data != '') {
         tx_rows = await Promise.all(res.data.map(async function (id, i) {
             let tx = await arweave.transactions.get(id);
@@ -231,3 +240,31 @@ export async function search_family_tree(search_query) {
     console.log(unique_family_members);
     return unique_family_members;
 }
+
+
+function generateQueryMap(queries) {
+    if (queries.length <= 0) return;
+    var last_query = queries.pop();
+    var temp_query_map = generateQueryMap(queries);
+    var query_map;
+    if (temp_query_map !== undefined) {
+        if (last_query !== undefined) {
+            query_map = {
+                op: 'and',
+                expr1: {
+                    op: 'equals',
+                    expr1: 'keyword',
+                    expr2: last_query,
+                },
+                expr2: temp_query_map,
+            }
+        }
+    } else {
+        query_map = {
+            op: 'equals',
+            expr1: 'keyword',
+            expr2: last_query,
+        }
+    }
+    return query_map;
+};
