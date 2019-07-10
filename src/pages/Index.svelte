@@ -1,5 +1,6 @@
 <script>
     import Divider from '../components/Divider.svelte';
+    import ProfileList from '../components/ProfileList.svelte';
 	import { current_page } from '../router.js';
 	import { is_connected, user_profile, search_family_tree } from '../arweave.js';
 
@@ -13,11 +14,19 @@
 
 	let search_query = '';
 	let is_searching = false;
-	let search_results;
+	let is_empty = true;
+	let profiles;
 	async function handleSearch(event) {
 		if (event.key === "Enter") {
+			if (search_query.length === 0) {
+				profiles = [];
+				is_empty = true;
+				return;
+			}
+
+			is_empty = false;
 			is_searching = true;
-			search_results = await search_family_tree(search_query.toLowerCase());
+			profiles = await search_family_tree(search_query.toLowerCase());
 			is_searching = false;
 		}
 	}
@@ -79,4 +88,5 @@
 			on:keyup={handleSearch}>
 		</div>
 	</div>
+	<ProfileList {profiles} {is_searching} {is_empty}/>
 </div>
