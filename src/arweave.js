@@ -224,7 +224,7 @@ export async function search_family_tree(search_query) {
             return profile;
         }))
     } else {
-        return;
+        return [];
     }
 
     var unique_ids = [];
