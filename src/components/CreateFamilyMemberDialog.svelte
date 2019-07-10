@@ -25,10 +25,6 @@
         function(event) {
             
             event.preventDefault();
-
-            // form.reset();
-            // let $j = jQuery.noConflict();
-            // $j('#create-family-member-dialog').modal('hide');
             if (form.checkValidity()) submitCreateFamilyMember();
         });
     });
