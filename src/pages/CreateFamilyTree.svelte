@@ -1,7 +1,7 @@
 <script>
     import { current_page } from '../router.js';
     import { onMount } from 'svelte';
-    import { create_profile } from '../arweave.js'
+    import { create_profile, get_transaction_status, selected_profile, fetch_self_identity, public_address } from '../arweave.js'
 
     let month_list = [
         {value: 1, label: 'January'},
@@ -30,15 +30,41 @@
             event.preventDefault();
             if (form.checkValidity()) submitCreateFamilyTree();
         });
-	});
-
-    function submitCreateFamilyTree() {
-        console.log("creating");
+    });
+    
+    let is_loading = false;
+    let is_done = false;
+    
+    async function submitCreateFamilyTree() {
+        is_loading = true;
         let form_data = new FormData(form);
         let form_data_map = {};
         form_data.forEach((value, key) => {form_data_map[key] = value});
-        create_profile(form_data_map, true);
+        let transaction_id = await create_profile(form_data_map, true);
+
+        let $j = jQuery.noConflict();
+        $j('#success-dialog').modal('show');
+        checkStatus(transaction_id);
     }
+
+    async function checkStatus(tx_id) {
+        setTimeout(async function() {
+			let response = await get_transaction_status(tx_id);
+            if (response.status == 200) {
+                const profile = await fetch_self_identity(public_address);
+                $selected_profile = profile;
+                $current_page = "tree";
+            } else {
+                checkStatus(tx_id);
+            }
+        }, 5000);
+	}
+
+    let close_modal_button;
+	function closeModal(event) {
+        close_modal_button.click();
+        is_done = false;
+	}
 </script>
 
 <style>
@@ -59,7 +85,14 @@
         </div>
 	</div>
 	<div class="row">
-		<div class="col">
+        {#if is_loading}
+            <div class="col modal-height">
+                <div class="text-center mt-5">
+                    <i class="fa fa-spinner fa-pulse fa-4x fa-fw dark-accent mt-4"></i>
+                </div>
+            </div>
+        {/if}
+		<div class="col {is_loading ? 'hide' : 'show'}">
             <form bind:this={form}>
                 <div class="form-row">
                     <div class="form-group col-md-6 col-lg-4">
@@ -115,4 +148,37 @@
             </form>
 		</div>
 	</div>
+</div>
+
+
+<div class="modal fade" id="success-dialog" tabindex="-1" role="dialog" aria-labelledby="SuccessDialog" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Create Family Tree</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close" bind:this={close_modal_button} >
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <div class="row">
+            <div class="col modal-height">
+                <div class="text-center mt-5">
+                    <div class="mt-4" style="hvertical-align: middle; text-align: center">
+                        <i class="fa fa-check-circle fa-5x dark-accent mt-4 mb-3" aria-hidden="true"></i>
+                        <br>
+                        <h5>Success!</h5>
+                        <p>Each save will take a few minutes. Learn more about how we store your data permanently on <a 
+                            href="https://www.arweave.org/"
+                            target="_blank">Arweave</a>.</p>
+                    </div>
+                    <div class="mt-3" style="text-align: center;">
+                        <button type="button" class="btn bg-accent px-5" on:click={closeModal}>Close</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+      </div>
+    </div>
+  </div>
 </div>

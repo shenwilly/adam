@@ -1,9 +1,35 @@
 <script>
-	import { arweave, is_connected } from '../arweave.js';
+	import { writable } from 'svelte/store';
+	import { Notification } from '../models/notification.js';
+	import { arweave, is_connected, notifications, notifications_counter, get_transaction_status } from '../arweave.js';
 
 	let showNotifications = false;
 	function toggleNotifications(event) {
 		showNotifications = !showNotifications;
+		if (showNotifications == false) {
+			$notifications.forEach(notification => {
+				notification.see();
+			});
+			$notifications_counter = 0;
+		}
+	}
+	// console.log($notifications);
+	checkStatus();
+
+	async function checkStatus() {
+		// console.log($notifications);
+        setTimeout(async function() {
+			await $notifications.forEach(async (notification) => {
+				if (notification.status == "done") return;
+				let response = await get_transaction_status(notification.id);
+				if (response.status == 200) {
+					notification.seen = false;
+					notification.status = "done";
+					$notifications_counter += 1;
+				}
+			});
+			checkStatus();
+        }, 5000);
 	}
 </script>
 
@@ -40,6 +66,15 @@
 		}
 	}
 
+	.card-body {
+		color: black;
+		padding: 0;
+	}
+
+	.unseen {
+		background-color: #d7ffd9;
+	}
+
 </style>
 
 <div class="container" style="position: relative; z-index: 200">
@@ -68,29 +103,32 @@
 				Connected
 			</div>
 			<div class="white-border px-2 ml-auto clickable mr-2" on:click={toggleNotifications}>
-				Notifications <i class="fa fa-bell" aria-hidden="true"></i>
+				Notifications 
+				{#if $notifications_counter === 0}
+				<span class="badge badge-light">0</span> 
+				{:else}
+				<span class="badge badge-danger">{$notifications_counter}</span> 
+				{/if}
+				<i class="fa fa-bell" aria-hidden="true"></i>
 				<!-- <span class="white-border clickable ml-2">My Family Tree</span> -->
 			</div>
 		</div>
 	{/if}
 	{#if showNotifications === true}
 	<div class="notification-box bg-dark-accent">
+		{#each $notifications as notification }
 		<div class="card notification-card">
-			<div class="card-body">
-				This is some text within a card body.
+			<div class="card-body {notification.seen ? 'seen' : 'unseen'}">
+				<p style="float: right" class="text-muted">{notification.timestamp()}</p>
+				{#if notification.status == "pending"}
+					<i class="fa fa-spinner fa-pulse fa-2x fa-fw dark-accent ml-2 mt-4"></i>
+				{:else}
+					<i class="fa fa-check fa-2x dark-accent ml-2 mt-4"></i>
+				{/if}
+				<p class="pb-4" style="display: inline-block" >{notification.description}</p>
 			</div>
 		</div>
-
-		<div class="card notification-card">
-			<div class="card-body">
-				This is some text within a card body.
-			</div>
-		</div>
-		<div class="card notification-card">
-			<div class="card-body">
-				This is some text within a card body.
-			</div>
-		</div>
+		{/each}
 	</div>
 	{/if}
 </div>

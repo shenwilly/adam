@@ -87,9 +87,6 @@
                             <i class="fa fa-check-circle fa-5x dark-accent mt-4 mb-3" aria-hidden="true"></i>
                             <br>
                             <h5>Success!</h5>
-                            <p>Each save will take a few minutes. Learn more about how we store your data permanently on <a 
-                                href="https://www.arweave.org/"
-                                target="_blank">Arweave</a>.</p>
                         </div>
                         <div class="mt-3" style="text-align: center;">
                             <button type="button" class="btn bg-accent px-5" on:click={closeModal}>Close</button>
