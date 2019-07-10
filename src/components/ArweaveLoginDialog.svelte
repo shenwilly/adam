@@ -4,7 +4,6 @@
 	let processing_wallet = false;
 	let login_success = false;
 	let file_input;
-	let close_modal_button;
 	function handleUpload(event) {
 		processing_wallet = true;
 		let fr = new FileReader();
@@ -20,6 +19,7 @@
 		fr.readAsText(file_input.files[0]);
 	}
 
+	let close_modal_button;
 	function closeModal(event) {
 		close_modal_button.click();
 	}
