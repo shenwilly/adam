@@ -1,4 +1,12 @@
 <script>
+	import { current_page } from '../router.js';
+    import { is_connected, user_profile, search_family_tree, selected_profile } from '../arweave.js';
+    
+    function goToFamily(profile) {
+		$selected_profile = profile;
+		$current_page = "tree";
+    }
+    
     export let profiles = [];
     export let is_empty;
     export let is_searching;
@@ -22,7 +30,7 @@
                             <div class="card mt-2">
                                 <div class="card-body">
                                     <i class="clickable">
-                                        <span class="badge badge-pill badge-green pull-right p-2">See Family Tree</span>
+                                        <span class="badge badge-pill badge-green pull-right p-2" on:click={() => goToFamily(profile)}>See Family Tree</span>
                                     </i>
                                     <h5 class="card-title">{profile.fullname()}</h5>
                                     <p class="card-description mb-0">Birth: {profile.birth()}</p>

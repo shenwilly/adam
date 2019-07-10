@@ -73,6 +73,9 @@ table {
 	background-color: #75a478;
 }
 
+.hide {
+	display: none;
+}
 /* .custom-node {
 	border: none;
 	-webkit-border-radius: 20px;

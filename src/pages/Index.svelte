@@ -2,14 +2,14 @@
     import Divider from '../components/Divider.svelte';
     import ProfileList from '../components/ProfileList.svelte';
 	import { current_page } from '../router.js';
-	import { is_connected, user_profile, search_family_tree } from '../arweave.js';
+	import { is_connected, user_profile, search_family_tree, selected_profile } from '../arweave.js';
 
     function goToCreate(event) {
-        // $current_page = "tree";
         $current_page = "create";
 	}
     function goToManage(event) {
-        $current_page = "tree";
+		$selected_profile = $user_profile;
+		$current_page = "tree";
 	}
 
 	let search_query = '';
