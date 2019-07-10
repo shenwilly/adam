@@ -1,7 +1,7 @@
 <script>
     import { current_page } from '../router.js';
     import { onMount } from 'svelte';
-    import { create_profile, get_transaction_status, selected_profile, fetch_self_identity, public_address } from '../arweave.js'
+    import { create_profile, get_transaction_status, selected_profile, fetch_self_identity, public_address, user_profile, is_connected } from '../arweave.js'
 
     let month_list = [
         {value: 1, label: 'January'},
@@ -52,8 +52,12 @@
 			let response = await get_transaction_status(tx_id);
             if (response.status == 200) {
                 const profile = await fetch_self_identity(public_address);
-                $selected_profile = profile;
-                $current_page = "tree";
+                if (profile !== undefined) {
+                    $user_profile = profile;
+                    $is_connected = true;
+                    $selected_profile = profile;
+                    $current_page = "tree";
+                }
             } else {
                 checkStatus(tx_id);
             }
