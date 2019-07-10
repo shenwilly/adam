@@ -9,26 +9,7 @@ export const user_profile = writable(undefined);
 export const selected_profile = writable(undefined);
 export const arweave = Arweave.init({host: 'arweave.net', port: 443, protocol: 'https'});
 
-export const notifications = writable([
-    // new Notification({
-    //     description: "Add: Zero Adam",
-    //     status: "pending",
-    //     unix_timestamp: "1562687898",
-    //     id: "L40HhmDDeyO_MHEqB2wMPUhccWwARaJXXCNHGJY1OlA",
-    // }),
-    // new Notification({
-    //     description: "Edit: First Adam",
-    //     status: "pending",
-    //     unix_timestamp: "1562688000",
-    //     id: "3mAyWq0M_hN9Lumd1rJT3IQQOsxQZ18Xj8A46VW1LFE",
-    // }),
-    // new Notification({
-    //     description: "Edit: Zero Adam",
-    //     status: "pending",
-    //     unix_timestamp: "1562685898",
-    //     id: "3mAyWq0M_hN9Lumd1rJT3IQQOsxQZ18Xj8A46VW1LFE",
-    // }),
-]);
+export const notifications = writable([]);
 export const notifications_counter = writable(0);
   
 export async function login(wallet_data) {

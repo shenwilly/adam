@@ -124,7 +124,12 @@
                 parentMembers.splice(index, 1);
             }
         });
-        rootMember = parentMembers[0];
+
+        if (parentMembers.length == 0) {
+            rootMember = originalMember;
+        } else {
+            rootMember = parentMembers[0];
+        }
         // console.log(rootMember);
         // console.log(originalMember);
         // console.log(parentRelations);
@@ -134,6 +139,7 @@
         treeData = generateTree(rootMember);
         // data = [treeData,];
         function generateTree(profile) {
+            console.log(profile);
             let data = {
                 name: profile.fullname(),
                 // selectedNodeClass: "hello",
