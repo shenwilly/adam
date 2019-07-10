@@ -5,6 +5,7 @@ export const is_connected = writable(false);
 export const public_address = writable("");
 export const wallet = writable("");
 export const user_profile = writable(undefined);
+export const selected_profile = writable(undefined);
 export const arweave = Arweave.init({host: 'arweave.net', port: 443, protocol: 'https'});
 
 export const notifications = writable([]);
@@ -57,7 +58,7 @@ export async function fetch_self_identity(address) {
 
             let tx_data = tx.get('data', {decode: true, string: true});
             let tx_object = JSON.parse(tx_data);
-            tx_object['id'] = id;
+            if (tx_object.id === undefined) tx_object.id = id;
             tx_object['unix_timestamp'] = '0'
             tx.get('tags').forEach(tag => {
                 let key = tag.get('name', { decode: true, string: true })
@@ -73,10 +74,10 @@ export async function fetch_self_identity(address) {
     }
 
     tx_rows.sort((a, b) => (Number(a.unixTime) - Number(b.unixTime)))
-    let user_profile = tx_rows[0];
+    let profile = tx_rows[0];
 
     // console.log(user_profile)
-    return user_profile;
+    return profile;
 }
 
 export async function fetch_family_members(family_id) {
@@ -105,7 +106,7 @@ export async function fetch_family_members(family_id) {
             let tx_data = tx.get('data', {decode: true, string: true});
             let tx_object = JSON.parse(tx_data);
             // console.log(tx_object);
-            tx_object['id'] = id;
+            if (tx_object.id === undefined) tx_object.id = id;
             tx_object['unix_timestamp'] = '0'
             tx.get('tags').forEach(tag => {
                 let key = tag.get('name', { decode: true, string: true })
@@ -186,6 +187,54 @@ export async function create_profile(data_map, is_self=false) {
     await arweave.transactions.post(tx);
 }
 
+export async function edit_profile(data_map) {
+    var unixTime = Math.round((new Date()).getTime() / 1000)
+
+    var keywords = [];
+    if ('first_name' in data_map) {
+        var new_keywords = data_map['first_name'].replace(',', '').toLowerCase().split(" ");
+        keywords.push(...new_keywords);
+    }
+    if ('last_name' in data_map) {
+        var new_keywords = data_map['last_name'].replace(',', '').toLowerCase().split(" ");
+        keywords.push(...new_keywords);
+    }
+    if ('birthplace' in data_map) {
+        var new_keywords = data_map['birthplace'].replace(',', '').toLowerCase().split(" ");
+        keywords.push(...new_keywords);        
+    }
+    
+    let wallet_value;
+    wallet.subscribe(value => {
+        wallet_value = value;
+    });
+
+    console.log(data_map);
+    let json_data = JSON.stringify(data_map);
+    var tx =
+        await arweave.createTransaction(
+            {
+                data: json_data,
+            },
+            wallet_value
+        );
+
+    tx.addTag('App-Name', 'adam-0');
+    tx.addTag('Unix-Time', unixTime);
+    if (user_profile.id == data_map["id"]) {
+        tx.addTag('Self', 'true');
+    } else {
+        tx.addTag('Self', 'false');
+    };
+    tx.addTag('Family-Id', data_map["family_id"]);
+    keywords.forEach(function(keyword) {
+        tx.addTag('keyword', keyword);
+    });
+    await arweave.transactions.sign(tx, wallet_value);
+    console.log(tx.id, "<")
+    await arweave.transactions.post(tx);
+}
+
 export async function search_family_tree(search_query) {
     var keywords = search_query.split(" ");
     
@@ -212,7 +261,7 @@ export async function search_family_tree(search_query) {
             let tx_data = tx.get('data', {decode: true, string: true});
             let tx_object = JSON.parse(tx_data);
             // console.log(tx_object);
-            tx_object['id'] = id;
+            if (tx_object.id === undefined) tx_object.id = id;
             tx_object['unix_timestamp'] = '0'
             tx.get('tags').forEach(tag => {
                 let key = tag.get('name', { decode: true, string: true })

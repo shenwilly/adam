@@ -1,18 +1,25 @@
 <script>
     import CreateFamilyMemberDialog from '../components/CreateFamilyMemberDialog.svelte';
+    import EditFamilyMemberDialog from '../components/EditFamilyMemberDialog.svelte';
     import { current_page } from '../router.js';
     import { onMount } from 'svelte';
-    import { user_profile, fetch_family_members } from '../arweave.js';
+    import { user_profile, fetch_family_members, is_connected } from '../arweave.js';
 
-    console.log($user_profile);
+    export let profile;
+    let selected_member = profile;
+    let profile_to_edit = profile;
     
     function goToIndex(event) {
         $current_page = "index";
     }
     
     let profile_data;
+
     function showCreateParent(event) {
-        console.log(selected_member.family_id);
+        if (!$is_connected) {
+            showLoginDialog();
+            return;
+        }
         profile_data = {
             family_id: selected_member.family_id,
             reference_id: selected_member.id,
@@ -21,6 +28,10 @@
         showCreateDialog();
     }
     function showCreateSpouse(event) {
+        if (!$is_connected) {
+            showLoginDialog();
+            return;
+        }
         profile_data = {
             family_id: selected_member.family_id,
             reference_id: selected_member.id,
@@ -29,6 +40,10 @@
         showCreateDialog();
     }
     function showCreateChild(event) {
+        if (!$is_connected) {
+            showLoginDialog();
+            return;
+        }
         profile_data = {
             family_id: selected_member.family_id,
             reference_id: selected_member.id,
@@ -36,25 +51,30 @@
         };
         showCreateDialog();
     }
+
+    function showEditProfile(profile) {
+        if (!$is_connected) {
+            showLoginDialog();
+            return;
+        }
+        profile_to_edit = profile;
+        showEditDialog();
+    }
+    function showEditDialog() {
+        let $j = jQuery.noConflict();
+        $j('#edit-family-member-dialog').modal('show');
+    }
     function showCreateDialog() {
         let $j = jQuery.noConflict();
         $j('#create-family-member-dialog').modal('show');
     }
+    function showLoginDialog() {
+        let $j = jQuery.noConflict();
+        $j('#arweave-wallet-dialog').modal('show');
+    }
 
-    let selected_member;
     let family_members_map = {};
-    family_members_map[$user_profile.id] = $user_profile;
-
-    let data = [];
-    let user_profile_data = {
-        name: $user_profile.fullname(),
-        class: "node",
-        textClass: "nodeText",
-        extra: {
-            "id": $user_profile.id,
-        }
-    };
-    data.push(user_profile_data);
+    family_members_map[profile.id] = profile;
 
     function createFamilyTree(family_members) {
         if (family_members === undefined) return;
@@ -116,8 +136,7 @@
         function generateTree(profile) {
             let data = {
                 name: profile.fullname(),
-                class: "node",
-                textClass: "nodeText",
+                // selectedNodeClass: "hello",
                 extra: {"id": profile.id},
             }
 
@@ -177,30 +196,6 @@
         };
         return treeData;
     }
-    // let data = [{
-    //     name: "Father",
-    //     class: "node",
-    //     textClass: "nodeText",
-    //     marriages: [{
-    //         spouse: {
-    //             name: "Mother",
-    //         },
-    //         children: [{
-    //             name: "Child",
-    //             class: "node",
-    //             textClass: "nodeText",
-    //             children: [
-    //                 {
-    //                     name: "Grandchild",
-    //                 }
-    //             ],
-    //         }]
-    //     },
-    //     ],
-    //     extra: {
-    //         "id": 1,
-    //     }
-    // }];
 
     let options = {
         target: '#canvas',
@@ -209,7 +204,7 @@
         height: 300,
         callbacks: {
             nodeClick: function(name, extra) {
-                console.log(extra.id);
+                // console.log(extra.id);
                 selected_member = family_members_map[extra.id];
             },
             nodeRightClick: function(name, extra) {
@@ -263,11 +258,14 @@
         }
     };
 
+    let is_loading = true;
 	onMount(async () => {
-        let family_members_data = await fetch_family_members($user_profile.family_id);
+        console.log(profile, "<<");
+        let family_members_data = await fetch_family_members(profile.family_id);
+        console.log(family_members_data, "<<");
         let data = createFamilyTree(family_members_data);
-        console.log("??", data);
         dTree.init([data,], options);
+        is_loading = false;
 	});
 </script>
 
@@ -286,72 +284,87 @@
 	<div class="row">
         <div class="col mb-2">
             <span>
-                <h3 class="font-weight-bold">Family Tree</h3> (click a family member to see their information)
+                <h3 class="font-weight-bold">Family Tree</h3> {!is_loading ? '(click a family member to see their information)' : ''}
             </span>
         </div>
 	</div>
-	<div class="row">
+	<div class="row {!is_loading ? 'show' : 'hide'}">
 		<div class="col">
             <div id="canvas"></div>
 		</div>
 	</div>
-    {#if selected_member !== undefined}
-        <div class="mt-2">
-            <div class="row">
-                <div class="col">
-                    <h4 class="font-weight-bold">
-                        {selected_member.fullname()} 
-                        <i class="fa fa-pencil-square-o dark-accent clickable" aria-hidden="true" data-toggle="modal" data-target="#create-family-member-dialog"></i>
-                    </h4> 
-                </div>
-            </div>
-            <div class="row mb-2">
-                <div class="col">
-                    <span>Sex: {selected_member.sex()}</span>
-                </div>
-            </div>
-            <div class="row mb-2">
-                <div class="col">
-                    <span>Birth: {selected_member.birth()}</span>
-                </div>
-            </div>
-            {#if selected_member.role !== "spouse"}
-            <div class="row mb-2">
-                <div class="col">
-                    <span>Father: {selected_member.parent ? selected_member.parent.fullname() : '-' }</span>
-                    {#if selected_member.parent}
-                        <i class="fa fa-pencil-square-o dark-accent clickable" aria-hidden="true"></i>
-                    {:else}
-                        <i class="fa fa-plus-square dark-accent clickable" on:click={showCreateParent} aria-hidden="true"></i>
-                    {/if}
-                </div>
-            </div>
-            {/if}
-            <div class="row mb-2">
-                <div class="col">
-                    <span>Spouse: {selected_member.spouse ? selected_member.spouse.fullname() : '-' }</span>
-                    {#if selected_member.spouse}
-                        <i class="fa fa-pencil-square-o dark-accent clickable" aria-hidden="true"></i>
-                    {:else}
-                        <i class="fa fa-plus-square dark-accent clickable" on:click={showCreateSpouse} aria-hidden="true"></i>
-                    {/if}
-                </div>
-            </div>
-            <div class="row mb-4">
-                <div class="col">
-                    <span>Children: </span>
-                    <i class="fa fa-plus-square dark-accent clickable" on:click={showCreateChild} aria-hidden="true"></i>
-                    {#if selected_member.children}
-                    <ul>
-                        {#each selected_member.children as child}
-                            <li>{child.fullname()}  <i class="fa fa-pencil-square-o dark-accent clickable" aria-hidden="true"></i></li>
-                        {/each}
-                    </ul>
-                    {/if}
+    {#if is_loading}
+        <div class="row mt-5">
+            <div class="col">
+                <div style="text-align: center">
+                    <i class="fa fa-spinner fa-pulse fa-4x fa-fw dark-accent"></i>
                 </div>
             </div>
         </div>
+    {:else}
+        {#if selected_member !== undefined}
+            <div class="mt-2">
+                <div class="row">
+                    <div class="col">
+                        <h4 class="font-weight-bold">
+                            {selected_member.fullname()} 
+                            <i class="fa fa-pencil-square-o dark-accent clickable" aria-hidden="true" 
+                            on:click={() => showEditProfile(selected_member)} ></i>
+                        </h4> 
+                    </div>
+                </div>
+                <div class="row mb-2">
+                    <div class="col">
+                        <span>Sex: {selected_member.sex()}</span>
+                    </div>
+                </div>
+                <div class="row mb-2">
+                    <div class="col">
+                        <span>Birth: {selected_member.birth()}</span>
+                    </div>
+                </div>
+                {#if selected_member.role !== "spouse"}
+                <div class="row mb-2">
+                    <div class="col">
+                        <span>Father: {selected_member.parent ? selected_member.parent.fullname() : '-' }</span>
+                        {#if selected_member.parent}
+                            <i class="fa fa-pencil-square-o dark-accent clickable" aria-hidden="true"
+                            on:click={() => showEditProfile(selected_member.parent)} ></i>
+                        {:else}
+                            <i class="fa fa-plus-square dark-accent clickable" on:click={showCreateParent} aria-hidden="true"></i>
+                        {/if}
+                    </div>
+                </div>
+                {/if}
+                <div class="row mb-2">
+                    <div class="col">
+                        <span>Spouse: {selected_member.spouse ? selected_member.spouse.fullname() : '-' }</span>
+                        {#if selected_member.spouse}
+                            <i class="fa fa-pencil-square-o dark-accent clickable" aria-hidden="true"
+                            on:click={() => showEditProfile(selected_member.spouse)} ></i>
+                        {:else}
+                            <i class="fa fa-plus-square dark-accent clickable" on:click={showCreateSpouse} aria-hidden="true"></i>
+                        {/if}
+                    </div>
+                </div>
+                <div class="row mb-4">
+                    <div class="col">
+                        <span>Children: </span>
+                        <i class="fa fa-plus-square dark-accent clickable" on:click={showCreateChild} aria-hidden="true"></i>
+                        {#if selected_member.children}
+                        <ul>
+                            {#each selected_member.children as child}
+                                <li>{child.fullname()}  <i class="fa fa-pencil-square-o dark-accent clickable" aria-hidden="true"
+                                on:click={() => showEditProfile(child)} ></i></li>
+                            {/each}
+                        </ul>
+                        {/if}
+                    </div>
+                </div>
+            </div>
+        {/if}
     {/if}
 </div>
 
 <CreateFamilyMemberDialog {profile_data}/>
+<EditFamilyMemberDialog profile={profile_to_edit}/>
