@@ -33,7 +33,6 @@
     let is_done = false;
     async function submitCreateFamilyMember() {
         is_loading = true;
-        console.log("creating");
         let form_data = new FormData(form);
         let form_data_map = {};
         form_data.forEach((value, key) => {form_data_map[key] = value});

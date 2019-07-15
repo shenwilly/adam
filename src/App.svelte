@@ -8,8 +8,7 @@
 	import { current_page } from './router.js';
 
 	import { fade, fly } from 'svelte/transition';
-	arweave.network.getInfo().then(console.log);
-
+	// arweave.network.getInfo().then(console.log);
 </script>
 
 <style>

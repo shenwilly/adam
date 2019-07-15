@@ -12,12 +12,10 @@
 			});
 			$notifications_counter = 0;
 		}
-	}
-	// console.log($notifications);
+	};
 	checkStatus();
 
 	async function checkStatus() {
-		// console.log($notifications);
         setTimeout(async function() {
 			await $notifications.forEach(async (notification) => {
 				if (notification.status == "done") return;

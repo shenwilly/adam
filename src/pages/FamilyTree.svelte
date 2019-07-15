@@ -130,19 +130,12 @@
         } else {
             rootMember = parentMembers[0];
         }
-        // console.log(rootMember);
-        // console.log(originalMember);
-        // console.log(parentRelations);
-        // console.log(family_members_map);
-        
+
         let treeData = {};
         treeData = generateTree(rootMember);
-        // data = [treeData,];
         function generateTree(profile) {
-            console.log(profile);
             let data = {
                 name: profile.fullname(),
-                // selectedNodeClass: "hello",
                 extra: {"id": profile.id},
             }
 
@@ -210,7 +203,6 @@
         height: 300,
         callbacks: {
             nodeClick: function(name, extra) {
-                // console.log(extra.id);
                 selected_member = family_members_map[extra.id];
             },
             nodeRightClick: function(name, extra) {
@@ -266,9 +258,7 @@
 
     let is_loading = true;
 	onMount(async () => {
-        console.log(profile, "<<");
         let family_members_data = await fetch_family_members(profile.family_id);
-        console.log(family_members_data, "<<");
         let data = createFamilyTree(family_members_data);
         dTree.init([data,], options);
         is_loading = false;
